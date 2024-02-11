@@ -1,55 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useAccount } from "@/hooks/useAccount";
+import { useSimplePasskeyAccount } from "@/hooks/useSimplePasskeyAccount";
 
 
 const Login: React.FC = () => {
-  const {createAccount, loginToAccount} = useAccount()
-  const handleLogin = async () => {
+  const [passkeyName, setPasskeyName] = useState<string>("");
+  const { createNewAccount } = useSimplePasskeyAccount();
 
-    // Set a dummy session token in localStorage
-    localStorage.setItem("authToken", "test");
-    console.log('creating account ')
-    // await createAccount('test1');
-    await loginToAccount('test9');
-    // const passkeyCredentialResponse = await create({
-    //   appName: "ZeroTrusStarterKit",
-    //   name: "passkeyName",
-    //   displayName: "passkeyName",
-    //   yubikeyOnly: false,
-    // });
-
-    // const accountValidator = await createSimplePasskeyAccountValidator({
-    //   publicKey: passkeyCredentialResponse.response?.getPublicKey(),
-    //   credentialId: passkeyCredentialResponse.data?.id,
-    // });
-
-    // const simpleAccount = await createSimplePasskeyAccount(ethereumClient, {
-    //   accountValidator: accountValidator,
-    //   entryPoint: "0x5ff137d4b0fdcd49dca30c7cf57e578a026d2789",
-    //   factoryAddress: "0x505014cb8f88d950cd8737042f9f78052fdea101",
-    //   index: 0n,
-    // });
-
-    // console.log(simpleAccount.address);
-
-    // const account = await createSimplePasskeyAccount(ethereumClient,{
-    //   accountValidator:
-    // } );
-
-    ///  console.log(passkeyCredentialResponse.response?.getPublicKey());
-  };
+ const handleRegister = async () => {
+  console.log("1. First Create Passkey with name provided.");
+  console.log("2. Save the public information (metaInfo) of passkey on browser localStorage. ");
+  console.log(
+    "3. Generate counterfactual account address of simplePasskeyAccount for the created passkey using its public key and credentialId.",
+  );
+  const accountAddress = await createNewAccount(passkeyName);
+  console.log(accountAddress);
+ }
 
   return (
     <div>
-      <h1>Login Page</h1>
+      <h1>Register Page</h1>
       {/* ... other login form elements ... */}
+      <input
+        className="border-primary bg-base-100 text-base-content p-2 mr-2 w-full md:w-1/2 lg:w-1/3 rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-accent"
+        type="text"
+        value={passkeyName}
+        placeholder="Passkey name"
+        onChange={e => setPasskeyName(e.target.value)}
+      />
       <Button
         onClick={() => {
-          handleLogin();
+          handleRegister();
         }}
       >
-        Login
+        Register
       </Button>
     </div>
   );
