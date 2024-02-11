@@ -6,6 +6,7 @@ import {
   Card,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Link } from "lucide-react";
 const SetUp = () => {
   return (
     <div className="flex items-center justify-center min-h-[400px] p-6">
@@ -15,10 +16,14 @@ const SetUp = () => {
           <CardDescription>Manage your account settings.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <Button className="w-full" variant="outline">
-            Create Account
-          </Button>
-          <Button className="w-full">Login</Button>
+          <Link to="/signup">
+            <Button className="w-full" variant="outline">
+              Create Account
+            </Button>
+          </Link>
+          <Link to="/login">
+            <Button className="w-full">Login</Button>
+          </Link>
         </CardContent>
       </Card>
     </div>
