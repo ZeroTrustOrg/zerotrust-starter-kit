@@ -1,5 +1,5 @@
-const settings = () => {
+const Settings = () => {
   return <div>Enter</div>;
 };
 
-export default settings;
+export default Settings;

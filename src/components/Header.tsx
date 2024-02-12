@@ -1,4 +1,4 @@
-import { ModeToggle } from "./mode-toggle";
+import { ModeToggle } from "./ModeToggle";
 import { Button } from "./ui/button";
 import { SettingsIcon } from "lucide-react";
 import { Link } from "react-router-dom";

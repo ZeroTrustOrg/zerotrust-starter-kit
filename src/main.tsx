@@ -5,7 +5,9 @@ import { BrowserRouter } from "react-router-dom";
 import "./app.css";
 import * as chains from "viem/chains";
 import { AppConfigProvider } from "@/context/AppConfigContext.tsx";
+import { AuthProvider } from "./context/AuthContext.tsx";
 
+// biome-ignore lint/style/noNonNullAssertion: <explanation>
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
@@ -26,7 +28,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           },
         }}
       >
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </AppConfigProvider>
     </BrowserRouter>
   </React.StrictMode>,
