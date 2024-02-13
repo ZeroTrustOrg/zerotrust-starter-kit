@@ -5,13 +5,18 @@ import { useAuth } from "@/hooks/useAuth";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { DialogTitle, DialogDescription, DialogHeader, DialogContent,  Dialog, } from "@/components/ui/dialog";
+import {
+  DialogTitle,
+  DialogDescription,
+  DialogHeader,
+  DialogContent,
+  Dialog,
+} from "@/components/ui/dialog";
 import { useState } from "react";
-
 
 const Dashboard = () => {
   const [usernameInput, setUsernameInput] = useState<string>("");
-  const { account,loggedInUser,login, createNewAccount } = useAuth();
+  const { account, loggedInUser, login, createNewAccount } = useAuth();
   const [action, setAction] = useState<"login" | "register">("login");
   const handleLogin = async () => {
     const accountAddress = await login(usernameInput);
@@ -20,7 +25,9 @@ const Dashboard = () => {
   };
   const handleRegister = async () => {
     const accountAddress = await createNewAccount(usernameInput);
-    console.log(`Successfully created account for ${usernameInput} : ${accountAddress}`);
+    console.log(
+      `Successfully created account for ${usernameInput} : ${accountAddress}`,
+    );
   };
   if (loggedInUser && loggedInUser !== "") {
     return (
@@ -78,7 +85,11 @@ const Dashboard = () => {
               value={usernameInput}
             />
           </div>
-          <Button className="w-full" type="submit" onClick={action === "login" ? handleLogin :handleRegister}>
+          <Button
+            className="w-full"
+            type="submit"
+            onClick={action === "login" ? handleLogin : handleRegister}
+          >
             {action === "login" ? "Login" : "Create"}
           </Button>
           <div className="mt-4 text-center text-sm">
@@ -105,4 +116,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-

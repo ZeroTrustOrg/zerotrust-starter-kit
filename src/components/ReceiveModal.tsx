@@ -25,8 +25,9 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 import { QrCodeIcon, CopyIcon } from "lucide-react";
 
-import { QRCodeSVG } from "qrcode.react";
 import { useAuth } from "@/hooks/useAuth";
+
+import { QRCodeSVG } from "qrcode.react";
 
 const QrCodeModal = () => {
   const [open, setOpen] = React.useState(false);
@@ -61,7 +62,7 @@ const QrCodeModal = () => {
       <DrawerContent>
         <DrawerHeader className="text-left">
           <DrawerTitle>Edit profile</DrawerTitle>
-          <DrawerDescription />
+          <DrawerDescription></DrawerDescription>
         </DrawerHeader>
         <QrCodeCard className="px-4" />
         <DrawerFooter className="pt-2">
@@ -75,22 +76,22 @@ const QrCodeModal = () => {
 };
 
 // eslint-disable-next-line no-empty-pattern
-function QrCodeCard(props: React.ComponentProps<"form">) {
+function QrCodeCard({}: React.ComponentProps<"form">) {
   // Handle change in the address input
-  const {account} = useAuth();
- 
-  if(!account){
-    return "Please login to your account."
+  const { account } = useAuth();
+
+  if (!account) {
+    return "Please login to your account.";
   }
 
   return (
-    <Card className={props.className}>
+    <Card>
       <CardContent>
         <QRCodeSVG className="w-full h-full mt-5" value={account.address} />
       </CardContent>
       <CardFooter className="flex flex-col items-center justify-center mb-5 w-full space-y-4">
-        <span className="font-bold text-xl ">{account.address}</span>
-        <span className="text-center" />
+        <span className="font-bold text-xs	">{account.address}</span>
+        <span className="text-center"></span>
         <Button className="w-full mt-4">
           {" "}
           {/* You can adjust mt-4 to increase or decrease the space */}
