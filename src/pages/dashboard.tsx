@@ -1,7 +1,7 @@
+import { useEffect, useState } from "react";
 import { CardContent, CardFooter, Card } from "@/components/ui/card";
 import QrCodeModal from "@/components/ReceiveModal";
 import SendTransactionModal from "@/components/SendModal";
-import { useAuth } from "@/hooks/useAuth";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,12 +12,32 @@ import {
   DialogContent,
   Dialog,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import useAuth from "@/hooks/useAuth";
+import { useAppConfig } from "@/hooks/useAppConfig";
+import { formatEther } from "viem";
 
-const Dashboard = () => {
+function Dashboard() {
   const [usernameInput, setUsernameInput] = useState<string>("");
   const { account, loggedInUser, login, createNewAccount } = useAuth();
+  const {getPublicClient,targetChain} = useAppConfig();
   const [action, setAction] = useState<"login" | "register">("login");
+  const [balance,setBalance] = useState<string>("0");
+  const publicClient = getPublicClient();
+
+  useEffect(() => {
+    if (account) {
+      const fetchBalance = async () => {
+        const balance = await publicClient.getBalance({
+          address: account.address,
+        });
+        setBalance( formatEther(balance).toString());
+      };
+  
+      fetchBalance();
+    }
+  }, [account, publicClient]);
+  
+
   const handleLogin = async () => {
     const accountAddress = await login(usernameInput);
     console.log(accountAddress);
@@ -34,7 +54,7 @@ const Dashboard = () => {
       <main className="flex-1 flex flex-col items-center text-center min-h-[calc(100vh-_theme(spacing.16))] gap-4 md:justify-center">
         <Card className="w-full max-w-sm mt-4 md:mt-0">
           <CardContent className="flex flex-col items-center gap-2 mt-4">
-            <div className="text-3xl font-bold">$5,231.89</div>
+            <div className="text-3xl font-bold">{`${balance} ${targetChain.nativeCurrency.symbol}`} </div>
             <div className="text-sm text-gray-500 dark:text-gray-400">
               Available balance
             </div>
@@ -46,7 +66,7 @@ const Dashboard = () => {
             </div>
           </CardContent>
           <CardFooter className="flex gap-2">
-            <SendTransactionModal />
+            <SendTransactionModal availableBalance={balance}/>
             <QrCodeModal />
           </CardFooter>
         </Card>
@@ -55,7 +75,7 @@ const Dashboard = () => {
   }
 
   return (
-    <Dialog open={true}>
+    <Dialog open>
       <DialogContent>
         <DialogHeader>
           {action === "login" ? (
@@ -95,15 +115,15 @@ const Dashboard = () => {
           <div className="mt-4 text-center text-sm">
             {action === "login" ? (
               <>
-                Don't have an account?
-                <Button variant={"link"} onClick={() => setAction("register")}>
+                Don&apos;t have an account?
+                <Button variant="link" onClick={() => setAction("register")}>
                   Sign up
                 </Button>
               </>
             ) : (
               <>
                 Already have an account?
-                <Button variant={"link"} onClick={() => setAction("login")}>
+                <Button variant="link" onClick={() => setAction("login")}>
                   Login
                 </Button>
               </>
@@ -113,6 +133,6 @@ const Dashboard = () => {
       </DialogContent>
     </Dialog>
   );
-};
+}
 
 export default Dashboard;

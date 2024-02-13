@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,9 +24,10 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 import { QrCodeIcon, CopyIcon } from "lucide-react";
 
-import { useAuth } from "@/hooks/useAuth";
 
 import { QRCodeSVG } from "qrcode.react";
+import useAuth from "@/hooks/useAuth";
+import useMediaQuery from "@/hooks/useMediaQuery";
 
 const QrCodeModal = () => {
   const [open, setOpen] = React.useState(false);

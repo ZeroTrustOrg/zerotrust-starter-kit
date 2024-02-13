@@ -1,8 +1,8 @@
 import { Passkey, PasskeyToSimplePasskeyAccountParameters, SimplePasskeyAccount, passkeyToSimplePasskeyAccount } from "@zero-trust-org/accounts";
 import { ReactNode, createContext, useEffect, useRef, useState } from "react";
 import { Address, Hex } from "viem";
-import { useAppConfig } from "./AppConfigContext";
 import { useLocalStorage, useSessionStorage } from "usehooks-ts";
+import { useAppConfig } from "@/hooks/useAppConfig";
 
 const simplePasskeyAccountsStorageKey = "zeroTrust.simplePasskeyAccounts";
 export type SimplePasskeyAccountsMetaInfo = {

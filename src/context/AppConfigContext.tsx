@@ -1,15 +1,16 @@
 // AppConfigContext.tsx
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { BundlerClient, createBundlerClient } from "permissionless";
 import { Address, PublicClient, createPublicClient, http } from "viem";
 import * as chains from "viem/chains";
+import { PimlicoPaymasterV1Client, createPimlicoPaymasterV1Client } from "@/lib/PimlicoPaymasterV1Client";
 
 export type ApplicationConfig = {
   entryPointAddress: Address;
   accountFactoryAddress: Address;
   publicClientRpc: string;
   bundlerClientRpc: string;
-  paymasterClientRpc: string;
+  pimlicoPaymasterV1ClientRpc: string;
 };
 
 export type GlobalConfig = {
@@ -31,9 +32,10 @@ type AppConfigContextType = {
   setDefaultConfig: (configName: string) => void;
   getPublicClient: () => PublicClient;
   getBundlerClient: () => BundlerClient;
+  getPimlicoPaymasterV1Client: () => PimlicoPaymasterV1Client;
 };
 
-const AppConfigContext = createContext<AppConfigContextType | undefined>(undefined);
+export const AppConfigContext = createContext<AppConfigContextType | undefined>(undefined);
 
 export const AppConfigProvider: React.FC<{
   initialConfig: GlobalConfig;
@@ -56,6 +58,14 @@ export const AppConfigProvider: React.FC<{
       transport: http(appConfig.bundlerClientRpc),
     });
     return bundlerClient;
+  };
+
+  const getPimlicoPaymasterV1Client = (): PimlicoPaymasterV1Client => {
+    const pimlicoV1PaymasterClient = createPimlicoPaymasterV1Client({
+      chain: globalConfig.targetChain,
+      transport: http(appConfig.pimlicoPaymasterV1ClientRpc),
+    });
+    return pimlicoV1PaymasterClient;
   };
 
   const updateConfig = (configName: string, updatedConfig: Partial<ApplicationConfig>) => {
@@ -99,6 +109,7 @@ export const AppConfigProvider: React.FC<{
         setDefaultConfig,
         getPublicClient,
         getBundlerClient,
+        getPimlicoPaymasterV1Client,
       }}
     >
       {children}
@@ -106,12 +117,4 @@ export const AppConfigProvider: React.FC<{
   );
 };
 
-export const useAppConfig = () => {
-  const configContext = useContext(AppConfigContext);
 
-  if (!configContext) {
-    throw new Error("useAppConfig must be used within an AppConfigProvider");
-  }
-
-  return configContext;
-};

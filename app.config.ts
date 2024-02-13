@@ -1,6 +1,11 @@
 import { Address, getAddress } from "viem";
 import * as chains from "viem/chains";
 
+export type AccountConfig = {
+  accountFactoryAddress: Address;
+  entryPointAddress: Address;
+};
+
 export type AppConfig = {
   appName:string;
   appSubDomain:string;
@@ -13,12 +18,7 @@ export type AppConfig = {
   accountConfig:AccountConfig
 };
 
-export type AccountConfig = {
-  accountFactoryAddress: Address;
-  entryPointAddress: Address;
-};
-
-const appConfig = {
+const appConfig : AppConfig = {
   appName:'ZTA-boilerplate',
   appSubDomain:'0trust.eth',
   appSubDomainChain:chains.sepolia,

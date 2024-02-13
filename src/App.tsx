@@ -1,8 +1,8 @@
 import { useRoutes } from "react-router-dom";
-import { ThemeProvider } from "./context/ThemeProvider";
-import Header from "./components/Header";
-import Dashboard from "./pages/dashboard";
-import Settings from "./pages/settings";
+import { ThemeProvider } from "./context/ThemeProvider.tsx";
+import Header from "./components/Header.tsx";
+import Dashboard from "./pages/dashboard.tsx";
+import Settings from "./pages/settings.tsx";
 
 const routes = [
   { path: "/", element: <Dashboard /> },
