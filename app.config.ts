@@ -30,7 +30,7 @@ const appConfig: AppConfig = {
   bundlerRpc: process.env.ETHEREUM_RPC || '',
   accountConfig: {
     accountFactoryAddress: getAddress(
-      process.env.ACCOUNT_FACTORY_ADDRESS || '0x2223355bEd756f99AC407EbA7e4C7dd8dc783E30',
+      process.env.ACCOUNT_FACTORY_ADDRESS || '0xEA68b3eFbBf63BB837F36A90AA97Df27bBF9B864',
     ),
     entryPointAddress: getAddress(process.env.ENTRYPOINT_ADDRESS || '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789'),
   },
