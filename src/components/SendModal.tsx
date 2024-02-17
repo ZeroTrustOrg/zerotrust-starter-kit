@@ -21,7 +21,7 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 
-import { SendIcon } from 'lucide-react';
+import { SendIcon, CameraIcon } from 'lucide-react';
 import { useAppActions } from '@/hooks/useAppActions';
 import { normalize } from 'viem/ens';
 import { getAddress, isAddress, parseEther } from 'viem';
@@ -29,6 +29,7 @@ import useMediaQuery from '@/hooks/useMediaQuery';
 import { useAppConfig } from '@/hooks/useAppConfig';
 import useAuth from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import QrCodeReader, { QRCode } from 'react-qrcode-reader';
 
 //import { parseEther } from "viem";
 interface SendTransactionModalProps {
@@ -197,26 +198,46 @@ function TransactionForm({
   setAddressOrEns,
   setAmount,
 }: TransactionFormProps) {
+  const handleRead = (code: QRCode) => {
+    setAddressOrEns(code.data.toString());
+  };
+
   return (
     <form className={cn('grid items-start gap-4', className)} onSubmit={handleSubmit}>
       <div className="mb-5">
         <label htmlFor="address" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Address or ENS
         </label>
-        <div className="relative">
+        <div className="relative flex items-center">
           <input
             type="text"
             value={addressOrEns}
             onChange={(e) => setAddressOrEns(e.target.value)}
             onBlur={handleAddressOrEnsInputBlur}
-            className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
-              isValidAddressOrEns ? 'pr-10' : ''
+            className={`flex-1 h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+              isValidAddressOrEns ? '' : ''
             }`}
             required
           />
+          {/* Place the button outside and to the right of the input */}
+
+          <Dialog>
+            <DialogTrigger>
+              <Button size="icon" className="ml-2">
+                <CameraIcon className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Scan QR code</DialogTitle>
+              </DialogHeader>
+              <QrCodeReader delay={100} width={500} height={500} onRead={handleRead} />
+            </DialogContent>
+          </Dialog>
+
           {isValidAddressOrEns && (
             <svg
-              className="absolute inset-y-0 right-0 m-3 h-4 w-4 text-green-500"
+              className="absolute right-0 mr-10 m-3 h-4 w-4 text-green-500" // Adjust this margin to ensure it doesn't overlap with the button.
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -226,6 +247,7 @@ function TransactionForm({
             </svg>
           )}
         </div>
+
         <span className="text-xs">
           {isValidAddressOrEns && addressOrEns.includes('.') ? resolvedAddress : 'Enter valid address or Ens.'}
         </span>
