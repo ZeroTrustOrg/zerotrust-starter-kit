@@ -231,7 +231,15 @@ function TransactionForm({
               <DialogHeader>
                 <DialogTitle>Scan QR code</DialogTitle>
               </DialogHeader>
-              <QrCodeReader delay={100} width={500} height={500} onRead={handleRead} />
+              <QrCodeReader
+                delay={100}
+                width={500}
+                height={500}
+                onRead={handleRead}
+                videoConstraints={{
+                  facingMode: { exact: 'environment' },
+                }}
+              />
             </DialogContent>
           </Dialog>
 
