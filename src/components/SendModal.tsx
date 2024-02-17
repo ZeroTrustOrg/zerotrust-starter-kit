@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Drawer,
   DrawerClose,
@@ -19,37 +19,38 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer";
+} from '@/components/ui/drawer';
 
-import { SendIcon } from "lucide-react";
-import { useAppActions } from "@/hooks/useAppActions";
-import { normalize } from "viem/ens";
-import { getAddress, isAddress, parseEther } from "viem";
-import useMediaQuery from "@/hooks/useMediaQuery";
-import { useAppConfig } from "@/hooks/useAppConfig";
-import useAuth from "@/hooks/useAuth";
+import { SendIcon } from 'lucide-react';
+import { useAppActions } from '@/hooks/useAppActions';
+import { normalize } from 'viem/ens';
+import { getAddress, isAddress, parseEther } from 'viem';
+import useMediaQuery from '@/hooks/useMediaQuery';
+import { useAppConfig } from '@/hooks/useAppConfig';
+import useAuth from '@/hooks/useAuth';
+import { toast } from 'sonner';
 
 //import { parseEther } from "viem";
-interface SendTransactionModalProps{
-  availableBalance:string
+interface SendTransactionModalProps {
+  availableBalance: string;
 }
-const SendTransactionModal = ({availableBalance}:SendTransactionModalProps) => {
+const SendTransactionModal = ({ availableBalance }: SendTransactionModalProps) => {
   const [open, setOpen] = React.useState(false);
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-  const [addressOrEns, setAddressOrEns] = useState<string>("");
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const [addressOrEns, setAddressOrEns] = useState<string>('');
   const [resolvedAddress, setResolvedAddress] = useState('');
   const [isValidAddressOrEns, setIsValidiAddressOrEns] = useState(false);
-  const [amount, setAmount] = useState<string>("");
+  const [amount, setAmount] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const {getPublicClient} = useAppConfig();
-  const {sendEth} = useAppActions();
-  const {account} = useAuth();
+  const { getPublicClient } = useAppConfig();
+  const { sendEth } = useAppActions();
+  const { account } = useAuth();
   const publicClient = getPublicClient();
 
   const isValidAmount = parseEther(availableBalance) >= parseEther(amount);
 
-  if(!account){
-    return "Please login to send Eth";
+  if (!account) {
+    return 'Please login to send Eth';
   }
 
   const handleAddressOrEnsInputBlur = async () => {
@@ -57,7 +58,7 @@ const SendTransactionModal = ({availableBalance}:SendTransactionModalProps) => {
     let _resolvedAddress = null;
     if (addressOrEns.includes('.')) {
       _resolvedAddress = await resolveEnsToAddress(addressOrEns);
-      isValid = _resolvedAddress ?  isAddress(_resolvedAddress) : false;
+      isValid = _resolvedAddress ? isAddress(_resolvedAddress) : false;
     } else {
       isValid = isAddress(addressOrEns);
       _resolvedAddress = addressOrEns;
@@ -66,10 +67,10 @@ const SendTransactionModal = ({availableBalance}:SendTransactionModalProps) => {
     setIsValidiAddressOrEns(isValid);
   };
 
-  const resolveEnsToAddress = async (ensName:string) => {
+  const resolveEnsToAddress = async (ensName: string) => {
     return await publicClient.getEnsAddress({
       name: normalize(ensName),
-    })
+    });
   };
   // Add a submit handler if needed
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -79,61 +80,55 @@ const SendTransactionModal = ({availableBalance}:SendTransactionModalProps) => {
 
     try {
       let toAddress;
-      if(isValidAddressOrEns){
+      if (isValidAddressOrEns) {
         // not a valid address, it might be a ens name
-        toAddress = resolvedAddress
-        if(toAddress === null) return ;
-        console.log(toAddress)
-        sendEth(account,{
+        toAddress = resolvedAddress;
+        if (toAddress === null) return;
+        console.log(toAddress);
+        sendEth(account, {
           to: getAddress(toAddress),
           value: parseEther(amount),
-          data:"0x"
-        })
-        setAmount("");
-        setAddressOrEns("");
+          data: '0x',
+        });
+        setAmount('');
+        setAddressOrEns('');
       }
     } catch (error) {
       // Handle any errors here
       console.error(error);
+      toast('Error when sending transaction');
     } finally {
       setIsLoading(false);
     }
   };
 
-
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button
-            className="flex-1"
-            variant="default"
-            onClick={() => setOpen(true)}
-          >
+          <Button className="flex-1" variant="default" onClick={() => setOpen(true)}>
             <SendIcon className="mr-2" /> Send
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Send ETH/ Matic</DialogTitle>
-            <DialogDescription>
-              Input the address and amount you want and send a sponsored tx!
-            </DialogDescription>
+            <DialogTitle>Send xDAI</DialogTitle>
+            <DialogDescription>Input the address and amount you want and send a sponsored tx!</DialogDescription>
           </DialogHeader>
-          <TransactionForm 
-          className="px-4" 
-          handleSubmit={handleSubmit}
-          setAddressOrEns={setAddressOrEns}
-          setAmount={setAmount}
-          handleAddressOrEnsInputBlur={handleAddressOrEnsInputBlur} 
-          isValidAddressOrEns={isValidAddressOrEns} 
-          isLoading={isLoading} 
-          addressOrEns={addressOrEns} 
-          resolvedAddress={resolvedAddress} 
-          amount={amount}
-          availableBalance={availableBalance}
-          isValidAmount={isValidAmount}
-        />
+          <TransactionForm
+            className="px-4"
+            handleSubmit={handleSubmit}
+            setAddressOrEns={setAddressOrEns}
+            setAmount={setAmount}
+            handleAddressOrEnsInputBlur={handleAddressOrEnsInputBlur}
+            isValidAddressOrEns={isValidAddressOrEns}
+            isLoading={isLoading}
+            addressOrEns={addressOrEns}
+            resolvedAddress={resolvedAddress}
+            amount={amount}
+            availableBalance={availableBalance}
+            isValidAmount={isValidAmount}
+          />
         </DialogContent>
       </Dialog>
     );
@@ -148,21 +143,19 @@ const SendTransactionModal = ({availableBalance}:SendTransactionModalProps) => {
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="text-left">
-          <DrawerTitle>Send ETH/ Matic</DrawerTitle>
-          <DrawerDescription>
-            Input the address and amount you want and send a sponsored tx!
-          </DrawerDescription>
+          <DrawerTitle>Send xDAI</DrawerTitle>
+          <DrawerDescription>Input the address and amount you want and send a sponsored tx!</DrawerDescription>
         </DrawerHeader>
-        <TransactionForm 
-          className="px-4" 
+        <TransactionForm
+          className="px-4"
           handleSubmit={handleSubmit}
           setAddressOrEns={setAddressOrEns}
           setAmount={setAmount}
-          handleAddressOrEnsInputBlur={handleAddressOrEnsInputBlur} 
-          isValidAddressOrEns={isValidAddressOrEns} 
-          isLoading={isLoading} 
-          addressOrEns={addressOrEns} 
-          resolvedAddress={resolvedAddress} 
+          handleAddressOrEnsInputBlur={handleAddressOrEnsInputBlur}
+          isValidAddressOrEns={isValidAddressOrEns}
+          isLoading={isLoading}
+          addressOrEns={addressOrEns}
+          resolvedAddress={resolvedAddress}
           amount={amount}
           availableBalance={availableBalance}
           isValidAmount={isValidAmount}
@@ -177,78 +170,83 @@ const SendTransactionModal = ({availableBalance}:SendTransactionModalProps) => {
   );
 };
 
-interface TransactionFormProps extends React.ComponentProps<"form">{
-  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void
-  setAddressOrEns: (addressOrEns:string) => void
-  setAmount : (ammount:string) => void
-  handleAddressOrEnsInputBlur: () => void
-  isValidAddressOrEns:boolean
-  isLoading:boolean
-  addressOrEns:string
-  resolvedAddress:string
-  amount:string
-  isValidAmount:boolean
-  availableBalance:string
+interface TransactionFormProps extends React.ComponentProps<'form'> {
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  setAddressOrEns: (addressOrEns: string) => void;
+  setAmount: (ammount: string) => void;
+  handleAddressOrEnsInputBlur: () => void;
+  isValidAddressOrEns: boolean;
+  isLoading: boolean;
+  addressOrEns: string;
+  resolvedAddress: string;
+  amount: string;
+  isValidAmount: boolean;
+  availableBalance: string;
 }
-function TransactionForm({ className, addressOrEns, amount, 
- isLoading,isValidAddressOrEns,resolvedAddress,availableBalance,isValidAmount,
- handleAddressOrEnsInputBlur, handleSubmit,setAddressOrEns,setAmount}: TransactionFormProps) {
+function TransactionForm({
+  className,
+  addressOrEns,
+  amount,
+  isLoading,
+  isValidAddressOrEns,
+  resolvedAddress,
+  availableBalance,
+  isValidAmount,
+  handleAddressOrEnsInputBlur,
+  handleSubmit,
+  setAddressOrEns,
+  setAmount,
+}: TransactionFormProps) {
   return (
-    <form
-      className={cn("grid items-start gap-4", className)}
-      onSubmit={handleSubmit}
-    >
+    <form className={cn('grid items-start gap-4', className)} onSubmit={handleSubmit}>
       <div className="mb-5">
-        <label
-          htmlFor="address"
-          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
+        <label htmlFor="address" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Address or ENS
         </label>
         <div className="relative">
           <input
-            type="text" 
+            type="text"
             value={addressOrEns}
-            onChange={e => setAddressOrEns(e.target.value)}
+            onChange={(e) => setAddressOrEns(e.target.value)}
             onBlur={handleAddressOrEnsInputBlur}
-            className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${isValidAddressOrEns ? 'pr-10' : ''}`}
+            className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+              isValidAddressOrEns ? 'pr-10' : ''
+            }`}
             required
           />
           {isValidAddressOrEns && (
-            <svg className="absolute inset-y-0 right-0 m-3 h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="absolute inset-y-0 right-0 m-3 h-4 w-4 text-green-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <title>Valid</title>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           )}
         </div>
         <span className="text-xs">
-          {isValidAddressOrEns && addressOrEns.includes(".") 
-          ? resolvedAddress
-          :"Enter valid address or Ens."}
+          {isValidAddressOrEns && addressOrEns.includes('.') ? resolvedAddress : 'Enter valid address or Ens.'}
         </span>
-          
       </div>
       <div className="mb-5">
-        <label
-          htmlFor="amount"
-          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
+        <label htmlFor="amount" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Amount
         </label>
         <input
           type="text" // Changed from password to text
           id="amount"
           value={amount}
-          onChange={e => setAmount(e.target.value)}
+          onChange={(e) => setAmount(e.target.value)}
           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           required
         />
-        <span className="text-xs">{!isValidAmount && amount.length > 0 ? "Invalid Amount" : "Enter a valid amount."}</span>
+        <span className="text-xs">
+          {!isValidAmount && amount.length > 0 ? 'Invalid Amount' : 'Enter a valid amount.'}
+        </span>
       </div>
-      <label
-        htmlFor="balance"
-        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-      >
+      <label htmlFor="balance" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
         Available Balance: {availableBalance}
       </label>
       <div className="flex items-center justify-center mb-5 w-full">
