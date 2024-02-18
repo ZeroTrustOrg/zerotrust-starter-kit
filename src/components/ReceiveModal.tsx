@@ -1,6 +1,6 @@
-import * as React from "react";
+import * as React from 'react';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Drawer,
   DrawerClose,
@@ -18,20 +18,20 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer";
+} from '@/components/ui/drawer';
+import { toast } from 'sonner';
 
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
-import { QrCodeIcon, CopyIcon } from "lucide-react";
+import { QrCodeIcon, CopyIcon } from 'lucide-react';
 
-
-import { QRCodeSVG } from "qrcode.react";
-import useAuth from "@/hooks/useAuth";
-import useMediaQuery from "@/hooks/useMediaQuery";
+import { QRCodeSVG } from 'qrcode.react';
+import useAuth from '@/hooks/useAuth';
+import useMediaQuery from '@/hooks/useMediaQuery';
 
 const QrCodeModal = () => {
   const [open, setOpen] = React.useState(false);
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isDesktop = useMediaQuery('(min-width: 768px)');
 
   const triggerButton = (
     <Button className="flex-1" onClick={() => setOpen(true)}>
@@ -46,9 +46,7 @@ const QrCodeModal = () => {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Receive Funds</DialogTitle>
-            <DialogDescription>
-              Only send funds to this address in the Deployed Network
-            </DialogDescription>
+            <DialogDescription>Only send funds to this address in the Deployed Network</DialogDescription>
           </DialogHeader>
           <QrCodeCard />
         </DialogContent>
@@ -76,13 +74,26 @@ const QrCodeModal = () => {
 };
 
 // eslint-disable-next-line no-empty-pattern
-function QrCodeCard({}: React.ComponentProps<"form">) {
+function QrCodeCard({}: React.ComponentProps<'form'>) {
   // Handle change in the address input
   const { account } = useAuth();
 
   if (!account) {
-    return "Please login to your account.";
+    return 'Please login to your account.';
   }
+  const copyAddressToClipboard = () => {
+    if (navigator.clipboard && account.address) {
+      navigator.clipboard
+        .writeText(account.address)
+        .then(() => {
+          toast('Address Copied to clipboard');
+        })
+        .catch((err) => {
+          console.error('Error in copying text: ', err);
+          toast('Failed to copy address');
+        });
+    }
+  };
 
   return (
     <Card>
@@ -92,8 +103,8 @@ function QrCodeCard({}: React.ComponentProps<"form">) {
       <CardFooter className="flex flex-col items-center justify-center mb-5 w-full space-y-4">
         <span className="font-bold text-xs	">{account.address}</span>
         <span className="text-center"></span>
-        <Button className="w-full mt-4">
-          {" "}
+        <Button className="w-full mt-4" onClick={copyAddressToClipboard}>
+          {' '}
           {/* You can adjust mt-4 to increase or decrease the space */}
           <CopyIcon /> Copy Address
         </Button>

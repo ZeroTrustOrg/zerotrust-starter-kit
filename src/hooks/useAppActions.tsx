@@ -5,7 +5,7 @@ import { useAppConfig } from "./useAppConfig";
 import { GetUserOperationReceiptReturnType, UserOperation, getAccountNonce } from "permissionless";
 
 type AppActionHookReturn = {
-  sendEth: (account: SimplePasskeyAccount,  sendParameters: {to:Address, value:bigint, data:Hex} ) => void;
+  sendEth: (account: SimplePasskeyAccount,  sendParameters: {to:Address, value:bigint, data:Hex} ) => Promise<`0x${string}` | null>;
 };
 
 export const useAppActions = (): AppActionHookReturn => {
@@ -45,7 +45,7 @@ export const useAppActions = (): AppActionHookReturn => {
     console.log(userOperation)
     const gasPrices = await publicClient.getGasPrice();
     console.log(`Gas Price: ${gasPrices}`)
-
+   
     userOperation.maxFeePerGas = gasPrices;
     userOperation.maxPriorityFeePerGas = gasPrices;
     
@@ -67,22 +67,20 @@ export const useAppActions = (): AppActionHookReturn => {
     })
 
     console.log(`UserOperation tx Hash: ${txHash}`)
-    // const receipt = await bundlerClient.getUserOperationReceipt({hash:txHash});
-
-
     if (bundlerClient && txHash) {
-      let txReceipt: GetUserOperationReceiptReturnType | null;
+      let userOpsReceipt: GetUserOperationReceiptReturnType | null;
       do {
-
-        txReceipt = await bundlerClient.getUserOperationReceipt({ hash: txHash });
-        if (!txReceipt) {
-          console.log(`UserOperation Receipt: ${txReceipt}`)
+        userOpsReceipt = await bundlerClient.getUserOperationReceipt({ hash: txHash });
+        if (!userOpsReceipt) {
+          console.log(`UserOperation Receipt: ${userOpsReceipt}`)
           await new Promise(resolve => setTimeout(resolve, 2000)); // Add a 2-second delay
         }else{
-          console.log(txReceipt);
+          console.log(userOpsReceipt);
+          return userOpsReceipt.receipt.transactionHash;
         }
-      } while (!txReceipt);
+      } while (!userOpsReceipt);
     }
+    return null;
   };
 
   return {
