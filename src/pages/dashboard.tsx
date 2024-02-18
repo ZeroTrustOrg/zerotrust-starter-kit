@@ -1,22 +1,20 @@
 import { useEffect, useState } from 'react';
-import { CardContent, CardFooter, Card } from '@/components/ui/card';
+import { CardContent, CardFooter, Card, CardTitle, CardDescription, CardHeader } from '@/components/ui/card';
 import QrCodeModal from '@/components/ReceiveModal';
 import SendTransactionModal from '@/components/SendModal';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { DialogTitle, DialogDescription, DialogHeader, DialogContent, Dialog } from '@/components/ui/dialog';
 import useAuth from '@/hooks/useAuth';
 import { useAppConfig } from '@/hooks/useAppConfig';
 import { formatEther } from 'viem';
+import OnboardingModal from '@/components/OnboadingModal';
 
 function Dashboard() {
-  const [usernameInput, setUsernameInput] = useState<string>('');
-  const { account, loggedInUser, login, createNewAccount } = useAuth();
+  const { account, loggedInUser } = useAuth();
   const { getPublicClient, targetChain } = useAppConfig();
-  const [action, setAction] = useState<'login' | 'register' | 'initial'>('initial');
+  const [action, setAction] = useState<'login' | 'register'>();
   const [balance, setBalance] = useState<string>('0');
   const publicClient = getPublicClient();
+  const [isModelOpen,setIsModelOpen] = useState(false)
 
   useEffect(() => {
     if (account) {
@@ -30,35 +28,25 @@ function Dashboard() {
     }
   }, [account, publicClient]);
 
-  const handleLogin = async () => {
-    await login(usernameInput);
-    console.log(`Logging user ${usernameInput} in.`);
-  };
-
-  const handleRegister = async () => {
-    await createNewAccount(usernameInput);
-    console.log(`Successfully created account for ${usernameInput}.`);
-    setAction('login'); // Switch to login after registration
-  };
-
-  if (!loggedInUser && action === 'initial') {
+  if (!loggedInUser) {
     return (
-      <Dialog open>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Welcome to ZeroTrust passkey wallet</DialogTitle>
-            <DialogDescription>Get started by logging in or signing up.</DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col items-center gap-4">
-            <Button className="w-full" onClick={() => setAction('login')}>
+      <main className="flex-1 flex flex-col items-center text-center min-h-[calc(100vh-_theme(spacing.16))] gap-4 md:justify-center">
+        <CardContent >
+          <CardHeader>
+            <CardTitle>ZeroTrust passkey wallet</CardTitle>
+            <CardDescription>Get started by logging in or signing up.</CardDescription>
+          </CardHeader>
+          <CardFooter className="flex flex-col items-center gap-4">
+            <Button className="w-full" onClick={() => {setAction('login'); setIsModelOpen(true);}}>
               Login
             </Button>
-            <Button className="w-full" onClick={() => setAction('register')}>
+            <Button className="w-full" onClick={() => {setAction('register'); setIsModelOpen(true);}}>
               Sign Up
             </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </CardFooter>
+        </CardContent>
+        {action && isModelOpen && <OnboardingModal onboardingAction={action} open={isModelOpen} onOpenChange={()=> setIsModelOpen(!isModelOpen)}/>}
+      </main>
     );
   }
 
@@ -81,58 +69,6 @@ function Dashboard() {
     );
   }
 
-  // The logic for rendering login or registration dialog based on the action state
-  return (
-    <Dialog open>
-      <DialogContent>
-        <DialogHeader>
-          {action === 'login' ? (
-            <>
-              <DialogTitle>Login with Username</DialogTitle>
-              <DialogDescription>Enter your username to login to your account</DialogDescription>
-            </>
-          ) : (
-            <>
-              <DialogTitle>Create your account</DialogTitle>
-              <DialogDescription>Enter your username for your account</DialogDescription>
-            </>
-          )}
-        </DialogHeader>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              required
-              type="text"
-              onChange={(e) => setUsernameInput(e.target.value)}
-              value={usernameInput}
-            />
-          </div>
-          <Button className="w-full" type="submit" onClick={action === 'login' ? handleLogin : handleRegister}>
-            {action === 'login' ? 'Login' : 'Create'}
-          </Button>
-          <div className="mt-4 text-center text-sm">
-            {action === 'login' ? (
-              <>
-                Don't have an account?
-                <Button variant="link" onClick={() => setAction('register')}>
-                  Sign up
-                </Button>
-              </>
-            ) : (
-              <>
-                Already have an account?
-                <Button variant="link" onClick={() => setAction('login')}>
-                  Login
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
 }
 
 export default Dashboard;

@@ -108,7 +108,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (e) {
       isCreatingNewPasskeyAccountRef.current = false;
-      console.error(e);
+      throw e;
     }
   };
 
@@ -117,43 +117,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     console.log("2. Using the credentialId from the mapping prompt user to sign a random msg.");
     console.log("3. Verify the signature with the saved public key to authenticate user.");
     console.log("4. Set the isUserLoggedIn & account for the loggedIn user.");
-    try {
-      if (passkeyAccounts[username]) {
-        const passkeyAccountMetaInfo = passkeyAccounts[username];
-        const userCredentials: PublicKeyCredentialDescriptor = {
-          id: Passkey.parseBase64url(passkeyAccountMetaInfo.credentialId),
-          type: "public-key",
+    if (passkeyAccounts[username]) {
+      const passkeyAccountMetaInfo = passkeyAccounts[username];
+      const userCredentials: PublicKeyCredentialDescriptor = {
+        id: Passkey.parseBase64url(passkeyAccountMetaInfo.credentialId),
+        type: "public-key",
+      };
+      const publicKeyAsHexString = passkeyAccountMetaInfo.publicKey.substring(2);
+      const passkeyCredentialResponse = await Passkey.get({ allowCredentials: [userCredentials] });
+      const assertation = passkeyCredentialResponse.response;
+      const publicKey = Passkey.hex2buf(publicKeyAsHexString);
+      const verificationData = await Passkey.verifySignature({
+        publicKey,
+        assertion: assertation,
+      });
+      if (verificationData.isValid) {
+        const passkeyToSimplePasskeyAccountParameters = {
+          credentialId: passkeyAccounts[username].credentialId,
+          publicKey: Passkey.hex2buf(passkeyAccounts[username].publicKey.substring(2)),
+          entryPoint: entryPointAddress,
+          factoryAddress: accountFactoryAddress,
+          index: 0,
         };
-        const publicKeyAsHexString = passkeyAccountMetaInfo.publicKey.substring(2);
-        const passkeyCredentialResponse = await Passkey.get({ allowCredentials: [userCredentials] });
-        const assertation = passkeyCredentialResponse.response;
-        const publicKey = Passkey.hex2buf(publicKeyAsHexString);
-        const verificationData = await Passkey.verifySignature({
-          publicKey,
-          assertion: assertation,
-        });
-        if (verificationData.isValid) {
-          const passkeyToSimplePasskeyAccountParameters = {
-            credentialId: passkeyAccounts[username].credentialId,
-            publicKey: Passkey.hex2buf(passkeyAccounts[username].publicKey.substring(2)),
-            entryPoint: entryPointAddress,
-            factoryAddress: accountFactoryAddress,
-            index: 0,
-          };
-          const simplePasskeyAccount = await passkeyToSimplePasskeyAccount(
-            publicClient,
-            passkeyToSimplePasskeyAccountParameters,
-          );
-          console.log(simplePasskeyAccount);
-          setAccount(simplePasskeyAccount);
-          setLoggedInUser(username);
-          return simplePasskeyAccount.address;
-        }
-          throw Error("Verification Failed!");
+        const simplePasskeyAccount = await passkeyToSimplePasskeyAccount(
+          publicClient,
+          passkeyToSimplePasskeyAccountParameters,
+        );
+        console.log(simplePasskeyAccount);
+        setAccount(simplePasskeyAccount);
+        setLoggedInUser(username);
+        return simplePasskeyAccount.address;
       }
-    } catch (e) {
-      console.error(e);
+        throw Error("User login verification failed!");
     }
+    throw Error("User not found");
   };
 
   async function getLoggedInUser() {
