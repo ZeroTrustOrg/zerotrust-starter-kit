@@ -79,6 +79,8 @@ const SendTransactionModal = ({ availableBalance }: SendTransactionModalProps) =
     // Logic to handle form submission
     setIsLoading(true);
 
+    alert(isLoading);
+
     try {
       let toAddress;
       if (isValidAddressOrEns) {
@@ -300,7 +302,12 @@ function TransactionForm({
             </svg>
           </div>
         ) : (
-          <Button disabled={!(isValidAddressOrEns && isValidAmount)} type="submit" className="w-full">
+          <Button
+            disabled={!(isValidAddressOrEns && isValidAmount)}
+            type="submit"
+            className="w-full"
+            isLoading={isLoading}
+          >
             Send
           </Button>
         )}
