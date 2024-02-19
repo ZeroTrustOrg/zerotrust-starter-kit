@@ -1,30 +1,9 @@
-# React + TypeScript + Vite
+# zerotrust-starter-kit
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository showcases a React-Vite project named ZeroTrust Starter Kit, illustrating the utilization of the `@zero-trust-org/accounts` [SDK](https://github.com/ZeroTrustOrg/sdk/blob/master/packages/accounts/README.md) for developing decentralized applications.
 
-Currently, two official plugins are available:
+The [AuthContext.tsx](https://github.com/ZeroTrustOrg/zerotrust-starter-kit/blob/main/src/context/AuthContext.tsx) file contains the implementation details for creating/registering new passkey accounts and the login functionality to enable logging in with the created passkey account. 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The [useAppAction.txs](https://github.com/ZeroTrustOrg/zerotrust-starter-kit/blob/main/src/hooks/useAppActions.tsx) hook demonstrates how the SimplePasskeyAccount can be utilized to send native tokens using smart contract accounts.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+Explore the sample project to understand how the `SimplePasskeyAccount` from the `@zero-trust-org/accounts` SDK can seamlessly integrate into your decentralized applications.
