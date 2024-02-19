@@ -72,13 +72,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           name: `${appName}-${username}`,
           yubikeyOnly: false,
         });
-        const passkeyPublicKeyAsHexResponse = Passkey.getPublicKeyFromAttestationResponse(
-          passkeyCredentialResponse.response,
+        const passkeyPublicKeyResponse = Passkey.getPublicKeyFromAttestationResponse(
+          passkeyCredentialResponse.authenticatorAttestationResponse,
         );
 
         const passkeyToSimplePasskeyAccountParameters: PasskeyToSimplePasskeyAccountParameters = {
           credentialId: passkeyCredentialResponse.publicKeyCredential.id,
-          publicKey: passkeyPublicKeyAsHexResponse.publicKey,
+          publicKey: passkeyPublicKeyResponse.publicKey,
           entryPoint: entryPointAddress,
           factoryAddress: accountFactoryAddress,
           index: 0,
@@ -92,7 +92,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         const simplePasskeyAccountMetaInfo: SimplePasskeyAccountsMetaInfo = {
           credentialId: passkeyCredentialResponse.publicKeyCredential.id,
-          publicKey: `0x${Passkey.buf2hex(passkeyPublicKeyAsHexResponse.publicKey)}`,
+          publicKey: `0x${Passkey.buf2hex(passkeyPublicKeyResponse.publicKey)}`,
           entryPoint: entryPointAddress,
           factoryAddress: accountFactoryAddress,
           index: 0,

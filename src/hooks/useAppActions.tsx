@@ -2,7 +2,7 @@
 import { SimplePasskeyAccount } from "@zero-trust-org/accounts";
 import { Address, Hex } from "viem";
 import { useAppConfig } from "./useAppConfig";
-import { GetUserOperationReceiptReturnType, UserOperation, getAccountNonce } from "permissionless";
+import { GetUserOperationReceiptReturnType, UserOperation} from "permissionless";
 
 type AppActionHookReturn = {
   sendEth: (account: SimplePasskeyAccount,  sendParameters: {to:Address, value:bigint, data:Hex} ) => Promise<`0x${string}` | null>;
@@ -23,10 +23,7 @@ export const useAppActions = (): AppActionHookReturn => {
       data
     });
 
-    const nonce = await getAccountNonce(publicClient,{
-      sender:account.address,
-      entryPoint: entryPointAddress,
-    })
+    const nonce = await account.getNonce();
 
     const userOperation: UserOperation= {
       callData: sendEthCalldata,

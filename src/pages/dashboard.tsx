@@ -33,7 +33,7 @@ function Dashboard() {
       <main className="flex-1 flex flex-col items-center text-center min-h-[calc(100vh-_theme(spacing.16))] gap-4 md:justify-center">
         <CardContent >
           <CardHeader>
-            <CardTitle>ZeroTrust passkey wallet</CardTitle>
+            <CardTitle>ZeroTrust passkey account</CardTitle>
             <CardDescription>Get started by logging in or signing up.</CardDescription>
           </CardHeader>
           <CardFooter className="flex flex-col items-center gap-4">
